@@ -122,6 +122,14 @@ describe Fastlane do
         expect(result).to eq("#{File.expand_path('README.md').shellescape} assemble -p .")
       end
 
+      it "correctly uses build file path" do
+        result = Fastlane::FastFile.new.parse("lane :build do
+          gradle(task: 'assemble', gradle_path: './README.md', build_file_path: '/README.md')
+        end").runner.execute(:build)
+
+        expect(result).to eq("#{File.expand_path('README.md').shellescape} assemble -p . -b /README.md")
+      end
+
       it "supports the backwards compatible syntax" do
         result = Fastlane::FastFile.new.parse("lane :build do
           gradle(task: 'assembleWorldDominationRelease', gradle_path: './README.md')

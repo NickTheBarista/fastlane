@@ -19,6 +19,7 @@ module Fastlane
         gradle_task = [task, flavor, build_type].join
 
         project_dir = params[:project_dir]
+        build_file = params[:build_file_path]
 
         gradle_path_param = params[:gradle_path] || './gradlew'
 
@@ -37,6 +38,7 @@ module Fastlane
         flags << "-p #{project_dir.shellescape}"
         flags << params[:properties].map { |k, v| "-P#{k.to_s.shellescape}=#{v.to_s.shellescape}" }.join(' ') unless params[:properties].nil?
         flags << params[:flags] unless params[:flags].nil?
+        flags << "-b #{build_file}" unless params[:build_file_path].nil?
 
         # Run the actual gradle task
         gradle = Helper::GradleHelper.new(gradle_path: gradle_path)
@@ -139,7 +141,12 @@ module Fastlane
                                        env_name: 'FL_GRADLE_PRINT_COMMAND_OUTPUT',
                                        description: 'Control whether the output produced by given Gradle command is printed while running (true/false)',
                                        is_string: false,
-                                       default_value: true)
+                                       default_value: true),
+          FastlaneCore::ConfigItem.new(key: :build_file_path,
+                                       env_name: 'FL_GRADLE_BUILD_FILE_PATH',
+                                       description: 'The path to the Gradle build file, from which you want to run the provided task from',
+                                       optional: true,
+                                       is_string: true)
         ]
       end
 
